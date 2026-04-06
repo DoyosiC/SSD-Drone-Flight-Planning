@@ -140,6 +140,44 @@ Key metrics / 主な指標:
 
 ---
 
+## exp3_range_eval.py — 距離推定精度評価
+
+実験手順は「巻尺で実距離を固定 → セッション実行 → 実測値を記録」の繰り返しです。
+```bash
+# セッション終了後、実測距離を対応づけて登録
+python exp3_range_eval.py --mode record --log logs/session_xxx.xlsx --gt_cm 40
+
+# 全距離分登録が済んだら集計
+python exp3_range_eval.py --mode analyze --gt_table exp3_gt.csv --out exp3_results/
+```
+
+## exp5_ablation_main.py — アブレーション実験
+6条件（`FULL` / `NO_HOLD `/ `NO_EMA` / `HZ_2` / `HZ_8` / `HZ_15`）を切り替えて実行します。
+```bash
+# 1条件5試行ずつ実行（条件を変えて繰り返す）
+python exp5_ablation_main.py --mode run --condition FULL   --trial 1
+python exp5_ablation_main.py --mode run --condition NO_HOLD --trial 1
+python exp5_ablation_main.py --mode run --condition NO_EMA  --trial 1
+
+# 全条件のログが揃ったら集計
+python exp5_ablation_main.py --mode analyze --log_dir logs/ --out exp5_results/
+```
+ログファイル名に条件名が入る（`ablation_NO_HOLD_trial01_...xlsx`）ため、集計時に自動で条件分類されます。
+
+## exp6_endtoend.py — End-to-End接近タスク
+```bash
+# 1試行ずつ実行（n=10以上推奨）
+python exp6_endtoend.py --mode run --trial 1
+# → 試行後に「成否確認プロンプト」が出るので Enter か 0/1 で確定
+
+# 全試行集計
+python exp6_endtoend.py --mode analyze --log_dir logs/ --out exp6_results/
+
+# 成否を後から修正したい場合
+python exp6_endtoend.py --mode annotate --result_csv exp6_results/exp6_trials.csv
+```
+成功判定の基準は `|z_ema - 0.30m| ≤ 0.05m `を 1.5秒以上 維持（`DIST_TOL_M` と `SUCCESS_HOLD_S` で変更可能）です。自動判定後に手動確認プロンプトが出るので、実際の飛行を見ていた判断で上書きできます。
+
 ## License / ライセンス
 
 Parts of `utils/match.py` are derived from [amdegroot/ssd.pytorch](https://github.com/amdegroot/ssd.pytorch) (MIT License).
