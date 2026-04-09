@@ -25,7 +25,7 @@ SSD（Single Shot Detector）をファインチューニングして果物（app
 ## Directory Structure / ディレクトリ構成
 
 ```
-tello-fruit-tracker/
+drone flight plan/
 │
 ├── main.py                    # Entry point (manual flight + stream)
 ├── main_tracking.py           # Entry point (autonomous tracking)
